@@ -18,3 +18,25 @@ describe("index page", function() {
       });
   });
 });
+
+describe("create campaign page", function() {
+  it("should exist", function() {
+    return chai
+      .request(app)
+      .get("/create.html")
+      .then(function(res) {
+        expect(res).to.have.status(200);
+      });
+  });
+});
+
+describe("contribute page", function() {
+  it("should exist", function() {
+    return chai
+      .request(app)
+      .get("/contribute.html")
+      .then(function(res) {
+        expect(res).to.have.status(200);
+      });
+  });
+});
