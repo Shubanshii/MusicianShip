@@ -1,7 +1,12 @@
 {
+  "version": "1.0.0",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha test/test-server.js --exit"
   },
+  "engines": {
+    "node": "10.7.0"
+  },
+  "license": "MIT",
   "dependencies": {
     "express": "^4.16.3"
   },
