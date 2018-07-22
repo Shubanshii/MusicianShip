@@ -93,10 +93,23 @@ function getAndDisplayCampaign() {
 }
 
 function onSubmit() {
-  $( ".contribution-form" ).submit(function( event ) {
+  $('.contribution-form').submit(function( event ) {
     let amount = $('.amount').val();
     MOCK_USER_INFO.users[0].campaigns[0].financialGoal = MOCK_USER_INFO.users[0].campaigns[0].financialGoal - amount;
     console.log(MOCK_USER_INFO.users[0].campaigns[0].financialGoal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    event.preventDefault();
+  });
+
+  $('.create-campaign-form').submit(function( event ) {
+    MOCK_USER_INFO.users[0].campaigns.push({
+      "artist": $('.artist').val(),
+      "title": $('.title').val(),
+      "description": $('.description').val(),
+      "files": [],
+      "financialGoal": $('.financial-goal').val(),
+      "createdAt": new Date().getTime(),
+    });
+    console.log(MOCK_USER_INFO.users[0].campaigns);
     event.preventDefault();
   });
 }
