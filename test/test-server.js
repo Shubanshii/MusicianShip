@@ -15,6 +15,7 @@ describe("index page", function() {
       .get("/")
       .then(function(res) {
         expect(res).to.have.status(200);
+        expect(res).to.be.html;
       });
   });
 });
@@ -26,6 +27,7 @@ describe("create campaign page", function() {
       .get("/create.html")
       .then(function(res) {
         expect(res).to.have.status(200);
+        expect(res).to.be.html;
       });
   });
 });
@@ -37,6 +39,7 @@ describe("contribute page", function() {
       .get("/contribute.html")
       .then(function(res) {
         expect(res).to.have.status(200);
+        expect(res).to.be.html;
       });
   });
 });
