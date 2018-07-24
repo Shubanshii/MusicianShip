@@ -26,7 +26,7 @@ const MOCK_USER_INFO = {
         {
           "artist": "TOOL",
           "title": "New Album",
-          "amount": "$1,000"
+          "amount": 1000
         }
       ]
     },
