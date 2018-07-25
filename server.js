@@ -1,6 +1,7 @@
 "use strict";
 
 const express = require('express');
+const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
@@ -9,6 +10,8 @@ const {PORT, DATABASE_URL} = require('./config');
 const {User} = require('./models');
 
 const app = express();
+
+app.use(morgan('common'));
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -84,7 +87,7 @@ app.put('/users/:id', (req, res) => {
 
   User
     .findByIdAndUpdate(req.params.id, {$set: toUpdate})
-    .then(restaurant => res.status(204).end())
+    .then(user => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}))
 });
 
@@ -97,7 +100,7 @@ app.delete('/users/:id', (req, res) => {
 
 let server;
 
-function runServer(databaseUrl, port=PORT) {
+function runServer(databaseUrl = DATABASE_URL, port=PORT) {
   return new Promise((resolve, reject) => {
     mongoose.connect(databaseUrl, err => {
       if (err) {
@@ -120,20 +123,6 @@ function closeServer() {
   return mongoose.disconnect().then(() => {
     return new Promise((resolve, reject) => {
       console.log('Closing server');
-      server.close(err => {
-        if (err) {
-          return reject(err);
-        }
-        resolve();
-      });
-    });
-  });
-}
-
-function closeServer() {
-  return mongoose.disconnect().then(() => {
-    return new Promise((resolve, reject) => {
-      console.log("Closing server");
       server.close(err => {
         if (err) {
           return reject(err);
