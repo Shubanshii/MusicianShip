@@ -5,16 +5,14 @@ const mongoose = require("mongoose");
 const userSchema = mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true},
-  campaigns: [
-    {
-      artist: String,
-      title: String,
-      description: String,
-      files: [String],
-      financialGoal: Number,
-      status: String
-    }
-  ],
+  campaigns: [{
+    artist: String,
+    title: String,
+    description: String,
+    files: [String],
+    financialGoal: Number,
+    status: String
+  }],
   contributedTo: [
     {
       artist: String,

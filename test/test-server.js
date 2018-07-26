@@ -26,7 +26,7 @@ function tearDownDb() {
 function seedUserData() {
   console.info('seeding user data');
   const seedData = [];
-  for (let i =1; i <=10; i++) {
+  for (let i = 1; i <= 10; i++) {
     seedData.push({
       username: faker.internet.userName(),
       email: faker.internet.email()
@@ -77,41 +77,144 @@ describe('Users API resource', function() {
           res.body.should.have.lengthOf(count);
         });
     });
-  });
 
-  describe("index page", function() {
-    it("should exist", function() {
-      return chai
-        .request(app)
-        .get("/")
-        .then(function(res) {
-          expect(res).to.have.status(200);
-          expect(res).to.be.html;
+    it('should return users with right fields', function() {
+      let resUser;
+      return chai.request(app)
+        .get('/users')
+        .then(function (res) {
+
+          res.should.have.status(200);
+          res.should.be.json;
+          res.body.should.be.a('array');
+          res.body.should.have.lengthOf.at.least(1);
+
+          res.body.forEach(function (user) {
+            user.should.be.a('object');
+            user.should.include.keys('username', 'email', 'id', 'createdAt');
+          });
+
+          resUser = res.body[0];
+          return User.findById(resUser.id);
+        })
+        .then(user => {
+          resUser.username.should.equal(user.username);
+          resUser.email.should.equal(user.email);
         });
     });
   });
 
-  describe("create campaign page", function() {
-    it("should exist", function() {
-      return chai
-        .request(app)
-        .get("/create.html")
-        .then(function(res) {
-          expect(res).to.have.status(200);
-          expect(res).to.be.html;
+  describe('POST endpoint', function () {
+    it('should add a new user', function () {
+      const newUser = {
+        username: faker.internet.userName(),
+        email: faker.internet.email()
+      };
+
+      return chai.request(app)
+        .post('/users')
+        .send(newUser)
+        .then(function (res) {
+          res.should.have.status(201);
+          res.should.be.json;
+          res.body.should.be.a('object');
+          res.body.should.include.keys('id', 'createdAt', 'username', 'email');
+          res.body.username.should.equal(newUser.username);
+          res.body.email.should.equal(newUser.email);
+          res.body.id.should.not.be.null;
+          return User.findById(res.body.id);
+        })
+        .then(function (user) {
+          user.username.should.equal(newUser.username);
+          user.email.should.equal(newUser.email);
         });
     });
   });
 
-  describe("contribute page", function() {
-    it("should exist", function() {
-      return chai
-        .request(app)
-        .get("/contribute.html")
-        .then(function(res) {
-          expect(res).to.have.status(200);
-          expect(res).to.be.html;
+  describe('PUT endpoint', function () {
+
+    it('should update fields you send over', function () {
+      const updateData = {
+        username: 'BuckDuck',
+        email: 'chroniclesofreeeeeedik@dff.com',
+        campaigns: [
+          {
+            artist: 'ShubanshNansh',
+            title: 'Frogger',
+            description: "solo you can't hurrr me",
+            files: ['wtf.wav'],
+            financialGoal: 50000,
+            status: 'Current'
+          }
+        ],
+        contributedTo: [
+          {
+            artist: "TOOL",
+            title: "Textural vocals",
+            amount: 45
+          }
+        ]
+      };
+
+      return User
+        .findOne()
+        .then(user => {
+          updateData.id = user.id;
+
+          return chai.request(app)
+          .put(`/users/${user.id}`)
+          .send(updateData);
+        })
+        .then(res => {
+          res.should.have.status(204);
+          return User.findById(updateData.id);
+        })
+        .then(user => {
+          user.username.should.equal(updateData.username);
+          user.email.should.equal(updateData.email);
+          console.log(user.campaigns);
+          expect(user.campaigns).to.eql(updateData.campaigns);
+          // expect(user.campaigns).to.eql(updateData.campaigns);
+          // user.campaigns[0].should.equal(updateData.campaigns[0]);
+          // user.contributedTo[0].should.equal(updateData.contributedTo[0]);
         });
     });
+  });
+
+});
+
+describe("index page", function() {
+  it("should exist", function() {
+    return chai
+      .request(app)
+      .get("/")
+      .then(function(res) {
+        expect(res).to.have.status(200);
+        expect(res).to.be.html;
+      });
+  });
+});
+
+describe("create campaign page", function() {
+  it("should exist", function() {
+    return chai
+      .request(app)
+      .get("/create.html")
+      .then(function(res) {
+        expect(res).to.have.status(200);
+        expect(res).to.be.html;
+      });
+  });
+});
+
+describe("contribute page", function() {
+  it("should exist", function() {
+    return chai
+      .request(app)
+      .get("/contribute.html")
+      .then(function(res) {
+        expect(res).to.have.status(200);
+        expect(res).to.be.html;
+      });
   });
 });

@@ -3,7 +3,6 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-
 mongoose.Promise = global.Promise;
 
 const {PORT, DATABASE_URL} = require('./config');
@@ -19,10 +18,8 @@ app.get("/users", (req, res) => {
   User
   .find()
   .then(users => {
-    res.json({
-      users: users.map(
-        (user) => user.serialize())
-    });
+    res.json(
+      users.map(user => user.serialize()));
   })
   .catch(
     err => {
@@ -86,7 +83,7 @@ app.put('/users/:id', (req, res) => {
   });
 
   User
-    .findByIdAndUpdate(req.params.id, {$set: toUpdate})
+    .findByIdAndUpdate(req.params.id, {$set: toUpdate}, { new: true })
     .then(user => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}))
 });
