@@ -74,7 +74,7 @@ app.put('/users/:id', (req, res) => {
   }
 
   const toUpdate = {};
-  const updateableFields = ['username', 'email', 'campaigns'];
+  const updateableFields = ['username', 'email', 'campaigns', 'contributedTo'];
 
   updateableFields.forEach(field => {
     if (field in req.body) {

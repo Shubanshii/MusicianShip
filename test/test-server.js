@@ -172,15 +172,35 @@ describe('Users API resource', function() {
         .then(user => {
           user.username.should.equal(updateData.username);
           user.email.should.equal(updateData.email);
-          console.log(user.campaigns);
-          expect(user.campaigns).to.eql(updateData.campaigns);
-          // expect(user.campaigns).to.eql(updateData.campaigns);
-          // user.campaigns[0].should.equal(updateData.campaigns[0]);
-          // user.contributedTo[0].should.equal(updateData.contributedTo[0]);
+          user.campaigns[0].artist.should.equal(updateData.campaigns[0].artist);
+          user.campaigns[0].title.should.equal(updateData.campaigns[0].title);
+          user.campaigns[0].description.should.equal(updateData.campaigns[0].description);
+          user.campaigns[0].files.should.eql(updateData.campaigns[0].files);
+          user.campaigns[0].financialGoal.should.equal(updateData.campaigns[0].financialGoal);
+          user.campaigns[0].status.should.equal(updateData.campaigns[0].status);
         });
     });
   });
 
+  describe('DELETE endpoint', function() {
+    it('should delete a user by id', function () {
+      let user;
+
+      return User
+        .findOne()
+        .then(_user => {
+          user = _user;
+          return chai.request(app).delete(`/users/${user.id}`);
+        })
+        .then(res => {
+          res.should.have.status(204);
+          return User.findById(user.id);
+        })
+        .then(_user => {
+          should.not.exist(_user);
+        });
+    });
+  });
 });
 
 describe("index page", function() {
