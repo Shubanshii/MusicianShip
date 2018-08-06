@@ -29,7 +29,8 @@ function seedUserData() {
   for (let i = 1; i <= 10; i++) {
     seedData.push({
       username: faker.internet.userName(),
-      email: faker.internet.email()
+      email: faker.internet.email(),
+      password: 'sd0f9dfk'
     });
   }
   return User.insertMany(seedData);
@@ -108,7 +109,7 @@ describe('Users API resource', function() {
     it('should add a new user', function () {
       const newUser = {
         username: faker.internet.userName(),
-        email: faker.internet.email()
+        email: faker.internet.email(),
       };
 
       return chai.request(app)

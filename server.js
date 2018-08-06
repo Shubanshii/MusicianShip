@@ -39,7 +39,7 @@ app.get('/users/:id', (req, res) => {
 });
 
 app.post('/users', (req, res) => {
-  const requiredFields = ['username', 'email'];
+  const requiredFields = ['username', 'email', 'password'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
@@ -53,6 +53,8 @@ app.post('/users', (req, res) => {
     .create({
       username: req.body.username,
       email: req.body.email,
+      password: req.body.password,
+      tokens: req.body.tokens,
       campaigns: req.body.campaigns,
       contributedTo: req.body.contributedTo,
       createdAt: req.body.createdAt})
