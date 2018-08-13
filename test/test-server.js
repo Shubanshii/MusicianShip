@@ -180,41 +180,45 @@ describe('Campaign API resource', function() {
     });
   });
 
-  // describe('PUT endpoint', function() {
-  //
-  //   // strategy:
-  //   //  1. Get an existing restaurant from db
-  //   //  2. Make a PUT request to update that restaurant
-  //   //  3. Prove restaurant returned by request contains data we sent
-  //   //  4. Prove restaurant in db is correctly updated
-  //   it('should update fields you send over', function() {
-  //     const updateData = {
-  //       name: 'fofofofofofofof',
-  //       cuisine: 'futuristic fusion'
-  //     };
-  //
-  //     return Restaurant
-  //       .findOne()
-  //       .then(function(restaurant) {
-  //         updateData.id = restaurant.id;
-  //
-  //         // make request then inspect it to make sure it reflects
-  //         // data we sent
-  //         return chai.request(app)
-  //           .put(`/restaurants/${restaurant.id}`)
-  //           .send(updateData);
-  //       })
-  //       .then(function(res) {
-  //         expect(res).to.have.status(204);
-  //
-  //         return Restaurant.findById(updateData.id);
-  //       })
-  //       .then(function(restaurant) {
-  //         expect(restaurant.name).to.equal(updateData.name);
-  //         expect(restaurant.cuisine).to.equal(updateData.cuisine);
-  //       });
-  //   });
-  // });
+  describe('PUT endpoint', function() {
+
+    // strategy:
+    //  1. Get an existing restaurant from db
+    //  2. Make a PUT request to update that restaurant
+    //  3. Prove restaurant returned by request contains data we sent
+    //  4. Prove restaurant in db is correctly updated
+    it('should update fields you send over', function() {
+      const updateData = {
+        artist: 'Ronald Jankiez',
+        title: 'Full Album',
+        description: "We're making a metal album!",
+        financialGoal: 200
+      };
+
+      return Campaign
+        .findOne()
+        .then(function(campaign) {
+          updateData.id = campaign.id;
+
+          // make request then inspect it to make sure it reflects
+          // data we sent
+          return chai.request(app)
+            .put(`/campaigns/${campaign.id}`)
+            .send(updateData);
+        })
+        .then(function(res) {
+          expect(res).to.have.status(204);
+
+          return Campaign.findById(updateData.id);
+        })
+        .then(function(campaign) {
+          expect(campaign.artist).to.equal(updateData.artist);
+          expect(campaign.title).to.equal(updateData.title);
+          expect(campaign.description).to.equal(updateData.description);
+          expect(campaign.financialGoal).to.equal(updateData.financialGoal);
+        });
+    });
+  });
 
   // describe('DELETE endpoint', function() {
   //   // strategy:
