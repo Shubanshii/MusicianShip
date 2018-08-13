@@ -1,7 +1,6 @@
 "use strict";
 
 const mongoose = require("mongoose");
-const validator = require("validator");
 
 const campaignSchema = mongoose.Schema({
   artist: String,
@@ -10,7 +9,7 @@ const campaignSchema = mongoose.Schema({
   files: [String],
   financialGoal: Number,
   status: String,
-  createdAt: { type: Date, default: Date.now }
+  createdAt: {type: Number, default: null}
 });
 
 //virtuals
