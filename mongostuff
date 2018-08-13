@@ -1,3 +1,5 @@
 mongodb://shubanshii1:Baylorprser2011@ds119692.mlab.com:19692/musicianship
 
 mongoimport -h ds119692.mlab.com:19692 -d musicianship -c campaigns -u shubanshii -p Ngan1223 --file seed-data.json
+
+test
