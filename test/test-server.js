@@ -139,48 +139,46 @@ describe('Campaign API resource', function() {
     });
   });
 
-  // describe('POST endpoint', function() {
-  //   // strategy: make a POST request with data,
-  //   // then prove that the restaurant we get back has
-  //   // right keys, and that `id` is there (which means
-  //   // the data was inserted into db)
-  //   it('should add a new restaurant', function() {
-  //
-  //     const newRestaurant = generateRestaurantData();
-  //     let mostRecentGrade;
-  //
-  //     return chai.request(app)
-  //       .post('/restaurants')
-  //       .send(newRestaurant)
-  //       .then(function(res) {
-  //         expect(res).to.have.status(201);
-  //         expect(res).to.be.json;
-  //         expect(res.body).to.be.a('object');
-  //         expect(res.body).to.include.keys(
-  //           'id', 'name', 'cuisine', 'borough', 'grade', 'address');
-  //         expect(res.body.name).to.equal(newRestaurant.name);
-  //         // cause Mongo should have created id on insertion
-  //         expect(res.body.id).to.not.be.null;
-  //         expect(res.body.cuisine).to.equal(newRestaurant.cuisine);
-  //         expect(res.body.borough).to.equal(newRestaurant.borough);
-  //
-  //         mostRecentGrade = newRestaurant.grades.sort(
-  //           (a, b) => b.date - a.date)[0].grade;
-  //
-  //         expect(res.body.grade).to.equal(mostRecentGrade);
-  //         return Restaurant.findById(res.body.id);
-  //       })
-  //       .then(function(restaurant) {
-  //         expect(restaurant.name).to.equal(newRestaurant.name);
-  //         expect(restaurant.cuisine).to.equal(newRestaurant.cuisine);
-  //         expect(restaurant.borough).to.equal(newRestaurant.borough);
-  //         expect(restaurant.grade).to.equal(mostRecentGrade);
-  //         expect(restaurant.address.building).to.equal(newRestaurant.address.building);
-  //         expect(restaurant.address.street).to.equal(newRestaurant.address.street);
-  //         expect(restaurant.address.zipcode).to.equal(newRestaurant.address.zipcode);
-  //       });
-  //   });
-  // });
+  describe('POST endpoint', function() {
+    // strategy: make a POST request with data,
+    // then prove that the restaurant we get back has
+    // right keys, and that `id` is there (which means
+    // the data was inserted into db)
+    it('should add a new campaign', function() {
+
+      const newCampaign = generateCampaignData();
+
+      return chai.request(app)
+        .post('/campaigns')
+        .send(newCampaign)
+        .then(function(res) {
+          expect(res).to.have.status(201);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.include.keys(
+            'id', 'artist', 'title', 'description', 'files', 'financialGoal', 'status', 'createdAt');
+          expect(res.body.artist).to.equal(newCampaign.artist);
+          // cause Mongo should have created id on insertion
+          expect(res.body.id).to.not.be.null;
+          expect(res.body.title).to.equal(newCampaign.title);
+          expect(res.body.description).to.equal(newCampaign.description);
+          expect(res.body.files).to.eql(newCampaign.files);
+          expect(res.body.status).to.equal(newCampaign.status);
+          expect(res.body.createdAt).to.equal(newCampaign.createdAt);
+
+
+
+          return Campaign.findById(res.body.id);
+        })
+        .then(function(campaign) {
+          expect(campaign.title).to.equal(newCampaign.title);
+          expect(campaign.description).to.equal(newCampaign.description);
+          expect(campaign.files).to.eql(newCampaign.files);
+          expect(campaign.status).to.equal(newCampaign.status);
+          expect(campaign.createdAt).to.equal(newCampaign.createdAt);
+        });
+    });
+  });
 
   // describe('PUT endpoint', function() {
   //
