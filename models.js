@@ -1,41 +1,39 @@
 "use strict";
 
 const mongoose = require("mongoose");
+const validator = require("validator");
 
-const userSchema = mongoose.Schema({
-  username: { type: String, required: true },
-  email: { type: String, required: true},
-  campaigns: [{
-    artist: String,
-    title: String,
-    description: String,
-    files: [String],
-    financialGoal: Number,
-    status: String
-  }],
-  contributedTo: [
-    {
-      artist: String,
-      title: String,
-      amount: Number
-    }
-  ],
+const campaignSchema = mongoose.Schema({
+  artist: String,
+  title: String,
+  description: String,
+  files: [String],
+  financialGoal: Number,
+  status: String,
   createdAt: { type: Date, default: Date.now }
 });
 
 //virtuals
+campaignSchema.virtual("campaignString").get(function() {
+  return `<p>Artist: ${data.campaigns[index].artist}</p>
+  <p>Title: ${data.campaigns[index].title} + </p> +
+  <p>Description: ${data.campaigns[index].description}</p>
+  <a href="contribute.html">Contribute</a>`
+});
 
-userSchema.methods.serialize = function() {
+campaignSchema.methods.serialize = function() {
   return {
     id: this._id,
-    username: this.username,
-    email: this.email,
-    createdAt: this.createdAt,
-    campaigns: this.campaigns,
-    contributedTo: this.contributedTo
+    artist: this.artist,
+    title: this.title,
+    description: this.description,
+    files: this.files,
+    financialGoal: this.financialGoal,
+    status: this.status,
+    createdAt: this.createdAt
   }
 }
 
-const User = mongoose.model('User', userSchema);
+const Campaign = mongoose.model('Campaign', campaignSchema);
 
-module.exports = { User };
+module.exports = { Campaign };
