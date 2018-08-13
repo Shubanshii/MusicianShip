@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 const {PORT, DATABASE_URL} = require('./config');
-const {User} = require('./models');
+const {Campaign} = require('./models');
 
 const app = express();
 
@@ -14,32 +14,54 @@ app.use(morgan('common'));
 app.use(express.json());
 app.use(express.static('public'));
 
-app.get("/users", (req, res) => {
-  User
-  .find()
-  .then(users => {
-    res.json(
-      users.map(user => user.serialize()));
-  })
-  .catch(
-    err => {
-      console.log(err);
-      res.status(500).json({message: 'Internal server error'});
+app.get('/campaigns', (req, res) => {
+    const filters = {};
+    const queryableFields = ['artist'];
+    queryableFields.forEach(field => {
+        if (req.query[field]) {
+            filters[field] = req.query[field];
+        }
     });
+    Campaign
+        .find(filters)
+        .then(Campaigns => res.json(
+            Campaigns.map(campaign => campaign.serialize())
+        ))
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({message: 'Internal server error'})
+        });
 });
 
-app.get('/users/:id', (req, res) => {
-  User
+// app.get('/campaigns', (req, res) => {
+//   Campaign
+//     .find()
+//     .then(campaigns => {
+//       res.json({
+//         campaigns: campaigns.map(
+//           (campaign) => campaign.serialize())
+//       });
+//     })
+//     .catch(
+//       err => {
+//         console.error(err);
+//         res.status(500).json({message: 'Internal server error'});
+//     });
+// });
+
+app.get('/campaigns/:id', (req, res) => {
+  Campaign
     .findById(req.params.id)
-    .then(user => res.json(user.serialize()))
+    .then(campaign =>res.json(campaign.serialize()))
     .catch(err => {
       console.error(err);
         res.status(500).json({message: 'Internal server error'})
     });
 });
 
-app.post('/users', (req, res) => {
-  const requiredFields = ['username', 'email', 'password'];
+app.post('/campaigns', (req, res) => {
+
+  const requiredFields = ['artist', 'title', 'description', 'financialGoal'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
@@ -49,34 +71,37 @@ app.post('/users', (req, res) => {
     }
   }
 
-  User
+  Campaign
     .create({
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password,
-      tokens: req.body.tokens,
-      campaigns: req.body.campaigns,
-      contributedTo: req.body.contributedTo,
+      id: req.body._id,
+      artist: req.body.artist,
+      title: req.body.title,
+      description: req.body.description,
+      files: req.body.files,
+      financialGoal: req.body.financialGoal,
+      status: req.body.status,
       createdAt: req.body.createdAt})
     .then(
-      user => res.status(201).json(user.serialize()))
+      campaign => res.status(201).json(campaign.serialize()))
     .catch(err => {
+      console.error(err);
       res.status(500).json({message: 'Internal server error'});
     });
 });
 
-app.put('/users/:id', (req, res) => {
+app.put('/campaigns/:id', (req, res) => {
 
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     const message = (
       `Request path id (${req.params.id}) and request body id ` +
-      `(${req.body.id} must match)`);
+      `(${req.body.id}) must match`);
     console.error(message);
+    // we return here to break out of this function
     return res.status(400).json({message: message});
   }
 
   const toUpdate = {};
-  const updateableFields = ['username', 'email', 'campaigns', 'contributedTo'];
+  const updateableFields = ['artist', 'title', 'description', 'files', 'financialGoal', 'status'];
 
   updateableFields.forEach(field => {
     if (field in req.body) {
@@ -84,36 +109,38 @@ app.put('/users/:id', (req, res) => {
     }
   });
 
-  User
-    .findByIdAndUpdate(req.params.id, {$set: toUpdate}, { new: true })
-    .then(user => res.status(204).end())
-    .catch(err => res.status(500).json({message: 'Internal server error'}))
+  Campaign
+    .findByIdAndUpdate(req.params.id, {$set: toUpdate})
+    .then(restaurant => res.status(204).end())
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
-app.delete('/users/:id', (req, res) => {
-  User
+app.delete('/campaigns/:id', (req, res) => {
+  Campaign
     .findByIdAndRemove(req.params.id)
     .then(() => res.status(204).end())
-    .catch(err => res.status(500).json({message: 'Internal server error'}))
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
 let server;
 
-function runServer(databaseUrl = DATABASE_URL, port=PORT) {
+function runServer(databaseUrl, port=PORT) {
   return new Promise((resolve, reject) => {
-    mongoose.connect(databaseUrl, err => {
-      if (err) {
-        return reject(err);
-      }
+    mongoose.connect(databaseUrl,
+      err => {
+        if (err) {
+          return reject(err);
+        }
 
-      server = app.listen(port, () => {
-        console.log(`Your app is listening on port ${port}`);
-        resolve();
-      })
-      .on('error', err => {
-        mongoose.disconnect();
-        reject(err);
-      });
+        server = app
+          .listen(port, () => {
+            console.log(`Your app is listening on port ${port}`);
+            resolve();
+          })
+          .on('error', err => {
+            mongoose.disconnect();
+            reject(err);
+          });
     });
   });
 }
