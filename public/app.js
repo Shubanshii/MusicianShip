@@ -76,8 +76,12 @@ function updateFinancialGoal() {
   });
 }
 
+
+
 //  on page load do this
 $(function() {
 	getAndDisplayCampaigns();
   updateFinancialGoal();
+  var formData = JSON.stringify($(".create-campaign-form").serializeArray());
+  console.log(formData);
 })
