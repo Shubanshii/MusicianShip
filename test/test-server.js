@@ -41,7 +41,7 @@ function generateCampaignData() {
     files: ['ddd.wav', 'alone.wav'],
     financialGoal: faker.random.number(),
     status: 'current',
-    createdAt: 333
+    createdAt: faker.date.recent()
   };
 }
 
@@ -135,7 +135,10 @@ describe('Campaign API resource', function() {
           expect(resCampaign.files).to.eql(campaign.files);
           expect(resCampaign.financialGoal).to.equal(campaign.financialGoal);
           expect(resCampaign.status).to.equal(campaign.status);
-          expect(resCampaign.createdAt).to.equal(campaign.createdAt);
+          const newDate = new Date(resCampaign.createdAt).getTime();
+          const newDate2 = new Date(campaign.createdAt).getTime();
+          expect(newDate).to.equal(newDate2);
+
         });
     });
   });
@@ -150,8 +153,6 @@ describe('Campaign API resource', function() {
           .get(`/campaigns/${campaign.id}`)
           .then(function(_res) {
             res = _res;
-            // console.log('artist', res.body.artist);
-            // console.log('campaign', campaign);
             expect(res).to.have.status(200);
 
             expect(res.body.artist).to.equal(campaign.artist);
@@ -204,7 +205,9 @@ describe('Campaign API resource', function() {
           expect(res.body.description).to.equal(newCampaign.description);
           expect(res.body.files).to.eql(newCampaign.files);
           expect(res.body.status).to.equal(newCampaign.status);
-          expect(res.body.createdAt).to.equal(newCampaign.createdAt);
+          const newResDate = new Date(res.body.createdAt).getTime();
+          const newResDate2 = new Date(newCampaign.createdAt).getTime();
+          expect(newResDate).to.equal(newResDate2);
 
 
 
@@ -215,7 +218,9 @@ describe('Campaign API resource', function() {
           expect(campaign.description).to.equal(newCampaign.description);
           expect(campaign.files).to.eql(newCampaign.files);
           expect(campaign.status).to.equal(newCampaign.status);
-          expect(campaign.createdAt).to.equal(newCampaign.createdAt);
+          const newDate = new Date(campaign.createdAt).getTime();
+          const newDate2 = new Date(newCampaign.createdAt).getTime();
+          expect(newDate).to.equal(newDate2);
         });
     });
   });

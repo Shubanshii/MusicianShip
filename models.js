@@ -9,7 +9,7 @@ const campaignSchema = mongoose.Schema({
   files: [String],
   financialGoal: Number,
   status: String,
-  createdAt: {type: Number, default: null}
+  createdAt: { type: Date, default: Date.now }
 });
 
 //virtuals
