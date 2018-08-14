@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 // this module
 const expect = chai.expect;
 
+const {ObjectID} = require('mongodb');
 const {Campaign} = require('../models');
 const {app, runServer, closeServer} = require('../server');
 const {TEST_DATABASE_URL} = require('../config');
@@ -138,6 +139,45 @@ describe('Campaign API resource', function() {
         });
     });
   });
+
+  describe('GET /campaigns/:id', function() {
+  it('should return campaign', function() {
+    return Campaign
+      .findOne()
+      .then(function(campaign) {
+        let res;
+        return chai.request(app)
+          .get(`/campaigns/${campaign.id}`)
+          .then(function(_res) {
+            res = _res;
+            // console.log('artist', res.body.artist);
+            // console.log('campaign', campaign);
+            expect(res).to.have.status(200);
+
+            expect(res.body.artist).to.equal(campaign.artist);
+          })
+      })
+  });
+
+  it('should return 500 if campaign not found', function() {
+    var hexId = new ObjectID().toHexString();
+
+    return chai.request(app)
+      .get(`/campaigns/${hexId}`)
+      .then(function(res) {
+         expect(res).to.have.status(500)
+       })
+
+  });
+
+  it('should return 500 for non-object ids', function() {
+    return chai.request(app)
+      .get('/campaigns/123abc')
+      .then(function(res) {
+          expect(res).to.have.status(500)
+    })
+  });
+});
 
   describe('POST endpoint', function() {
     // strategy: make a POST request with data,
