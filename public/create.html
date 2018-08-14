@@ -7,7 +7,7 @@
   <body>
     <div>
       <h1>Create Campaign</h1>
-      <form class="create-campaign-form" action="/campaigns" method="POST">
+      <form enctype='application/json' class="create-campaign-form" action="/campaigns" method="post" target="_blank">
         Artist/Band Name:<br>
         <input class="artist" type="text" name="artist"><br>
         Title:<br>
@@ -17,7 +17,7 @@
         Files (if any):<br>
         <input class="files" type="text" name="files"><br>
         Financial Goal:<br>
-        <input class="financial-goal" type="text" name="financial-goal"><br>
+        <input class="financialGoal" type="text" name="financialGoal"><br>
         <input type="submit" value="Submit">
       </form>
     </div>
