@@ -1,7 +1,10 @@
 "use strict";
 
 const express = require('express');
+const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const path = require('path');
+const fs = require('fs');
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
