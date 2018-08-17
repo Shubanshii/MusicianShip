@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const path = require('path');
+const exphbs = require('express-handlebars');
 const crypto = require('crypto');
 const multer = require('multer');
 const GridFsStorage = require('multer-gridfs-storage');
@@ -18,10 +19,10 @@ const {Campaign} = require('./models');
 const app = express();
 
 app.use(morgan('common'));
-app.use(express.json());
 app.use(express.static('public'));
-app.use(bodyParser.json());
-app.use(methodOverride('_method'))
+// app.set('views', path.join(__dirname, 'views'));
+// app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+// app.set('view engine', 'handlebars');
 
 // app.get('/campaigns', (req, res) => {
 //     const filters = {};
@@ -42,6 +43,24 @@ app.use(methodOverride('_method'))
 //         });
 // });
 
+// var people = [{
+//   firstName: 'Peter',
+//   lastName: 'Johnson'
+// },
+// {
+//   firstName: 'John',
+//   lastName: 'Doe'
+// }
+// ];
+//
+// app.get('/', (req, res) => {
+//   res.render('home', {
+//     content: 'This is some content',
+//     published: true,
+//     people
+//   });
+// });
+
 app.get('/campaigns', (req, res) => {
   Campaign
     .find()
@@ -59,13 +78,14 @@ app.get('/campaigns', (req, res) => {
 });
 
 app.get('/campaigns/:id', (req, res) => {
-  Campaign
-    .findById(req.params.id)
-    .then(campaign =>res.json(campaign.serialize()))
-    .catch(err => {
-      console.error(err);
-        res.status(500).json({message: 'Internal server error'})
-    });
+  res.sendFile('E:/Users/Chris/Desktop/MusicianShip/public/contribute.html');
+  // Campaign
+  //   .findById(req.params.id)
+  //   .then(campaign =>res.json(campaign.serialize()))
+  //   .catch(err => {
+  //     console.error(err);
+  //       res.status(500).json({message: 'Internal server error'})
+  //   });
 });
 
 app.post('/campaigns', (req, res) => {

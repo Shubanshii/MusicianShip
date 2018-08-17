@@ -43,19 +43,32 @@ const MOCK_CAMPAIGN_INFO = {
 function getRecentCampaigns(callbackFn) {
     // we use a `setTimeout` to make this asynchronous
     // as it would be with a real AJAX call.
-	setTimeout(function(){ callbackFn(MOCK_CAMPAIGN_INFO)}, 1);
+
+    const settings = {
+      url: '/campaigns',
+      // data: {
+      //   q: `${searchTerm} in:name`,
+      //   per_page: 5
+      // },
+      dataType: 'json',
+      type: 'GET',
+      success: callbackFn
+    };
+
+    $.ajax(settings);
 }
 
 // this function stays the same when we connect
 // to real API later
 function displayCampaigns(data) {
+  console.log(data);
     for (index in data.campaigns) {
       if(data.campaigns[index].status === "current") {
         $('.current-campaigns').append(
            '<p>Artist: ' + data.campaigns[index].artist + '</p>' +
            '<p>Title: ' + data.campaigns[index].title + '</p>' +
            '<p>Description: ' + data.campaigns[index].description + '</p>' +
-           '<a href="contribute.html">Contribute</a>');
+           '<a href="/campaigns/' + data.campaigns[index].id + '">Contribute</a>');
 
       }
 
@@ -122,34 +135,6 @@ function createCampaign() {
     return o;
 };
   $(".create-campaign-form").submit(function(event) {
-    // console.log($(this));
-    // var files = $(this).get(3).files;
-    //
-    // if (files.length > 0){
-    //   // create a FormData object which will be sent as the data payload in the
-    //   // AJAX request
-    //   var formData = new FormData();
-    //
-    //   // loop through all the selected files and add them to the formData object
-    //   for (var i = 0; i < files.length; i++) {
-    //     var file = files[i];
-    //
-    //     // add the files to formData object for the data payload
-    //     formData.append('uploads[]', file, file.name);
-    //   }
-    //
-    //   $.ajax({
-    //     url: '/upload',
-    //     type: 'POST',
-    //     data: formData,
-    //     processData: false,
-    //     contentType: false,
-    //     success: function(data){
-    //         console.log('upload successful!\n' + data);
-    //     }
-    //   });
-    //
-    // }
 
     let postObject = JSON.stringify($('.create-campaign-form').serializeObject())
 
@@ -171,6 +156,7 @@ function createCampaign() {
 //  on page load do this
 $(function() {
 	getAndDisplayCampaigns();
+  displayCampaign();
   updateFinancialGoal();
   createCampaign();
 

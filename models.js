@@ -8,7 +8,7 @@ const campaignSchema = mongoose.Schema({
   description: String,
   files: String,
   financialGoal: Number,
-  status: String,
+  status: {type: String, default: 'current'},
   createdAt: { type: Date, default: Date.now }
 });
 
