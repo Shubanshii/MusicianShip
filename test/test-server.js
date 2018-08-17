@@ -38,7 +38,7 @@ function generateCampaignData() {
     artist: faker.random.words(),
     title: faker.random.words(),
     description: faker.random.words(),
-    files: ['ddd.wav', 'alone.wav'],
+    files: 'ddd.wav',
     financialGoal: faker.random.number(),
     status: 'current',
     createdAt: faker.date.recent()
@@ -132,7 +132,7 @@ describe('Campaign API resource', function() {
           expect(resCampaign.artist).to.equal(campaign.artist);
           expect(resCampaign.title).to.equal(campaign.title);
           expect(resCampaign.description).to.equal(campaign.description);
-          expect(resCampaign.files).to.eql(campaign.files);
+          expect(resCampaign.files).to.equal(campaign.files);
           expect(resCampaign.financialGoal).to.equal(campaign.financialGoal);
           expect(resCampaign.status).to.equal(campaign.status);
           const newDate = new Date(resCampaign.createdAt).getTime();
@@ -203,7 +203,7 @@ describe('Campaign API resource', function() {
           expect(res.body.id).to.not.be.null;
           expect(res.body.title).to.equal(newCampaign.title);
           expect(res.body.description).to.equal(newCampaign.description);
-          expect(res.body.files).to.eql(newCampaign.files);
+          expect(res.body.files).to.equal(newCampaign.files);
           expect(res.body.status).to.equal(newCampaign.status);
           const newResDate = new Date(res.body.createdAt).getTime();
           const newResDate2 = new Date(newCampaign.createdAt).getTime();
@@ -216,7 +216,7 @@ describe('Campaign API resource', function() {
         .then(function(campaign) {
           expect(campaign.title).to.equal(newCampaign.title);
           expect(campaign.description).to.equal(newCampaign.description);
-          expect(campaign.files).to.eql(newCampaign.files);
+          expect(campaign.files).to.equal(newCampaign.files);
           expect(campaign.status).to.equal(newCampaign.status);
           const newDate = new Date(campaign.createdAt).getTime();
           const newDate2 = new Date(newCampaign.createdAt).getTime();
@@ -237,6 +237,7 @@ describe('Campaign API resource', function() {
         artist: 'Ronald Jankiez',
         title: 'Full Album',
         description: "We're making a metal album!",
+        files: 'jjj.wav',
         financialGoal: 200
       };
 
@@ -261,6 +262,7 @@ describe('Campaign API resource', function() {
           expect(campaign.title).to.equal(updateData.title);
           expect(campaign.description).to.equal(updateData.description);
           expect(campaign.financialGoal).to.equal(updateData.financialGoal);
+          expect(campaign.files).to.equal(updateData.files);
         });
     });
   });
