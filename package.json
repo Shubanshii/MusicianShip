@@ -6,7 +6,7 @@
     "test-watch": "nodemon --exec yarn test"
   },
   "engines": {
-    "node": "10.8.0"
+    "node": "10.9.0"
   },
   "license": "MIT",
   "dependencies": {
