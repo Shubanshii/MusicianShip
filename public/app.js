@@ -77,36 +77,32 @@ function updateFinancialGoal() {
 }
 
 function createCampaign() {
-  $('#upload-input').on('change', function(){
+  let dataURI;
+  $('#file-id').on('change', function(e) {
+    console.log('working');
 
-  var files = $(this).get(0).files;
+    //
+    const file = e.currentTarget.files[0],
+      reader = new FileReader();
 
-  if (files.length > 0){
-    // create a FormData object which will be sent as the data payload in the
-    // AJAX request
-    var formData = new FormData();
+    // if(file.size > 500000)
+    // { alert('File Size must be less than .5 megabytes'); return false; }
 
-    // loop through all the selected files and add them to the formData object
-    for (var i = 0; i < files.length; i++) {
-      var file = files[i];
 
-      // add the files to formData object for the data payload
-      formData.append('uploads[]', file, file.name);
-    }
+    reader.addEventListener('load', () =>
+    {
+      //
+      // preview.src = reader.result;
+      // uriVal.value = reader.result;
+      console.log(reader.result);
+      dataURI = reader.result;
+    }, false);
 
-    $.ajax({
-      url: '/upload',
-      type: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      success: function(data){
-          console.log('upload successful!\n' + data);
-      }
-    });
+    if(file)
+    { reader.readAsDataURL(file); }
+  });
 
-  }
-});
+
   $.fn.serializeObject = function()
 {
     var o = {};
@@ -121,11 +117,12 @@ function createCampaign() {
             o[this.name] = this.value || '';
         }
     });
-
+    o.files = dataURI;
+    console.log(o);
     return o;
 };
   $(".create-campaign-form").submit(function(event) {
-    console.log($(this));
+    // console.log($(this));
     // var files = $(this).get(3).files;
     //
     // if (files.length > 0){

@@ -6,7 +6,7 @@ const campaignSchema = mongoose.Schema({
   artist: String,
   title: String,
   description: String,
-  files: [String],
+  files: String,
   financialGoal: Number,
   status: String,
   createdAt: { type: Date, default: Date.now }
