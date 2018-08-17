@@ -77,34 +77,82 @@ function updateFinancialGoal() {
 }
 
 function createCampaign() {
+  let dataURI;
+  $('#file-id').on('change', function(e) {
+    console.log('working');
+
+    //
+    const file = e.currentTarget.files[0],
+      reader = new FileReader();
+
+    // if(file.size > 500000)
+    // { alert('File Size must be less than .5 megabytes'); return false; }
+
+
+    reader.addEventListener('load', () =>
+    {
+      //
+      // preview.src = reader.result;
+      // uriVal.value = reader.result;
+      console.log(reader.result);
+      dataURI = reader.result;
+    }, false);
+
+    if(file)
+    { reader.readAsDataURL(file); }
+  });
+
+
   $.fn.serializeObject = function()
 {
     var o = {};
     var a = this.serializeArray();
     $.each(a, function() {
         if (o[this.name] !== undefined) {
-
             if (!o[this.name].push) {
-
-                o[this.name] = [o[this.name]];
-
+              o[this.name] = [o[this.name]];
             }
-
             o[this.name].push(this.value || '');
         } else {
-
             o[this.name] = this.value || '';
-
         }
-
     });
-
+    o.files = dataURI;
+    console.log(o);
     return o;
 };
   $(".create-campaign-form").submit(function(event) {
+    // console.log($(this));
+    // var files = $(this).get(3).files;
+    //
+    // if (files.length > 0){
+    //   // create a FormData object which will be sent as the data payload in the
+    //   // AJAX request
+    //   var formData = new FormData();
+    //
+    //   // loop through all the selected files and add them to the formData object
+    //   for (var i = 0; i < files.length; i++) {
+    //     var file = files[i];
+    //
+    //     // add the files to formData object for the data payload
+    //     formData.append('uploads[]', file, file.name);
+    //   }
+    //
+    //   $.ajax({
+    //     url: '/upload',
+    //     type: 'POST',
+    //     data: formData,
+    //     processData: false,
+    //     contentType: false,
+    //     success: function(data){
+    //         console.log('upload successful!\n' + data);
+    //     }
+    //   });
+    //
+    // }
 
     let postObject = JSON.stringify($('.create-campaign-form').serializeObject())
-    
+
     $.ajax({
       type: "POST",
       url: "/campaigns",
@@ -113,8 +161,9 @@ function createCampaign() {
       dataType: "json",
       contentType: "application/json"
     });
+
     event.preventDefault();
-  })
+  });
 }
 
 

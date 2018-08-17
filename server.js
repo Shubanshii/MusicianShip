@@ -1,7 +1,14 @@
 "use strict";
 
 const express = require('express');
+const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const path = require('path');
+const crypto = require('crypto');
+const multer = require('multer');
+const GridFsStorage = require('multer-gridfs-storage');
+const Grid = require('gridfs-stream');
+const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
@@ -13,6 +20,8 @@ const app = express();
 app.use(morgan('common'));
 app.use(express.json());
 app.use(express.static('public'));
+app.use(bodyParser.json());
+app.use(methodOverride('_method'))
 
 // app.get('/campaigns', (req, res) => {
 //     const filters = {};
