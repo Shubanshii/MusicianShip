@@ -4,10 +4,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const path = require('path');
-const crypto = require('crypto');
-const multer = require('multer');
-const GridFsStorage = require('multer-gridfs-storage');
-const Grid = require('gridfs-stream');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
@@ -17,11 +13,24 @@ const {Campaign} = require('./models');
 
 const app = express();
 
+
+
+
 app.use(morgan('common'));
-app.use(express.json());
 app.use(express.static('public'));
 app.use(bodyParser.json());
-app.use(methodOverride('_method'))
+// app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+app.use(methodOverride('_method'));
+app.disable('etag');
+// create application/json parser
+
+
+app.get('/', (req, res) => {
+  res.render('index');
+});
+
+
 
 // app.get('/campaigns', (req, res) => {
 //     const filters = {};
@@ -33,7 +42,7 @@ app.use(methodOverride('_method'))
 //     });
 //     Campaign
 //         .find(filters)
-//         .then(Campaigns => res.json(
+//         .then(Campaigns => res.status(200).json(
 //             Campaigns.map(campaign => campaign.serialize())
 //         ))
 //         .catch(err => {
@@ -42,11 +51,29 @@ app.use(methodOverride('_method'))
 //         });
 // });
 
+// var people = [{
+//   firstName: 'Peter',
+//   lastName: 'Johnson'
+// },
+// {
+//   firstName: 'John',
+//   lastName: 'Doe'
+// }
+// ];
+//
+// app.get('/', (req, res) => {
+//   res.render('home', {
+//     content: 'This is some content',
+//     published: true,
+//     people
+//   });
+// });
+
 app.get('/campaigns', (req, res) => {
   Campaign
     .find()
     .then(campaigns => {
-      res.json({
+      res.status(200).json({
         campaigns: campaigns.map(
           (campaign) => campaign.serialize())
       });
@@ -59,17 +86,34 @@ app.get('/campaigns', (req, res) => {
 });
 
 app.get('/campaigns/:id', (req, res) => {
+
   Campaign
     .findById(req.params.id)
-    .then(campaign =>res.json(campaign.serialize()))
+    .then(campaign => {
+      res.render('contribute', campaign)
+    })
     .catch(err => {
       console.error(err);
         res.status(500).json({message: 'Internal server error'})
     });
+
 });
 
-app.post('/campaigns', (req, res) => {
+// <h3><%= campaign.title %></h3>
 
+// app.get('/campaigns/:id', (req, res) => {
+//
+//   Campaign
+//     .findById(req.params.id)
+//     .then(campaign =>res.status(200).json(campaign.serialize()).render('contribute'))
+//     .catch(err => {
+//       console.error(err);
+//         res.status(500).json({message: 'Internal server error'})
+//     });
+//
+// });
+
+app.post('/campaigns', (req, res) => {
   const requiredFields = ['artist', 'title', 'description', 'financialGoal'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];

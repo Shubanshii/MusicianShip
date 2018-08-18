@@ -8,17 +8,17 @@ const campaignSchema = mongoose.Schema({
   description: String,
   files: String,
   financialGoal: Number,
-  status: String,
+  status: {type: String, default: 'current'},
   createdAt: { type: Date, default: Date.now }
 });
 
-//virtuals
-campaignSchema.virtual("campaignString").get(function() {
-  return `<p>Artist: ${data.campaigns[index].artist}</p>
-  <p>Title: ${data.campaigns[index].title} + </p> +
-  <p>Description: ${data.campaigns[index].description}</p>
-  <a href="contribute.html">Contribute</a>`
-});
+// virtuals
+// campaignSchema.virtual("campaignString").get(function() {
+//   return `<p>Artist: ${data.campaigns[index].artist}</p>
+//   <p>Title: ${data.campaigns[index].title} + </p> +
+//   <p>Description: ${data.campaigns[index].description}</p>
+//   <a href="contribute.html">Contribute</a>`
+// });
 
 campaignSchema.methods.serialize = function() {
   return {
