@@ -26,14 +26,14 @@ function getRecentCampaigns(callbackFn) {
 // this function stays the same when we connect
 // to real API later
 function displayCampaigns(data) {
-  console.log(data);
-    for (index in data) {
-      if(data[index].status === "current") {
+  console.log(data.campaigns);
+    for (index in data.campaigns) {
+      if(data.campaigns[index].status === "current") {
         $('.current-campaigns').append(
-           '<p>Artist: ' + data[index].artist + '</p>' +
-           '<p>Title: ' + data[index].title + '</p>' +
-           '<p>Description: ' + data[index].description + '</p>' +
-           '<a href="/campaigns/' + data[index].id + '">Contribute</a>');
+           '<p>Artist: ' + data.campaigns[index].artist + '</p>' +
+           '<p>Title: ' + data.campaigns[index].title + '</p>' +
+           '<p>Description: ' + data.campaigns[index].description + '</p>' +
+           '<a href="/campaigns/' + data.campaigns[index].id + '">Contribute</a>');
 
       }
 
@@ -120,7 +120,6 @@ function createCampaign() {
 
 //  on page load do this
 $(function() {
-  console.log('working');
 	getAndDisplayCampaigns();
   // displayCampaigns();
   updateFinancialGoal();

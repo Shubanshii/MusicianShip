@@ -13,11 +13,18 @@ const {Campaign} = require('./models');
 
 const app = express();
 
+
+
+
 app.use(morgan('common'));
 app.use(express.static('public'));
+app.use(bodyParser.json());
 // app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(methodOverride('_method'));
+app.disable('etag');
+// create application/json parser
+
 
 app.get('/', (req, res) => {
   res.render('index');
@@ -25,24 +32,24 @@ app.get('/', (req, res) => {
 
 
 
-app.get('/campaigns', (req, res) => {
-    const filters = {};
-    const queryableFields = ['artist'];
-    queryableFields.forEach(field => {
-        if (req.query[field]) {
-            filters[field] = req.query[field];
-        }
-    });
-    Campaign
-        .find(filters)
-        .then(Campaigns => res.json(
-            Campaigns.map(campaign => campaign.serialize())
-        ))
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({message: 'Internal server error'})
-        });
-});
+// app.get('/campaigns', (req, res) => {
+//     const filters = {};
+//     const queryableFields = ['artist'];
+//     queryableFields.forEach(field => {
+//         if (req.query[field]) {
+//             filters[field] = req.query[field];
+//         }
+//     });
+//     Campaign
+//         .find(filters)
+//         .then(Campaigns => res.status(200).json(
+//             Campaigns.map(campaign => campaign.serialize())
+//         ))
+//         .catch(err => {
+//             console.error(err);
+//             res.status(500).json({message: 'Internal server error'})
+//         });
+// });
 
 // var people = [{
 //   firstName: 'Peter',
@@ -62,27 +69,29 @@ app.get('/campaigns', (req, res) => {
 //   });
 // });
 
-// app.get('/campaigns', (req, res) => {
-//   Campaign
-//     .find()
-//     .then(campaigns => {
-//       res.status(200).json({
-//         campaigns: campaigns.map(
-//           (campaign) => campaign.serialize())
-//       });
-//     })
-//     .catch(
-//       err => {
-//         console.error(err);
-//         res.status(500).json({message: 'Internal server error'});
-//     });
-// });
+app.get('/campaigns', (req, res) => {
+  Campaign
+    .find()
+    .then(campaigns => {
+      res.status(200).json({
+        campaigns: campaigns.map(
+          (campaign) => campaign.serialize())
+      });
+    })
+    .catch(
+      err => {
+        console.error(err);
+        res.status(500).json({message: 'Internal server error'});
+    });
+});
 
 app.get('/campaigns/:id', (req, res) => {
 
   Campaign
     .findById(req.params.id)
-    .then(campaign =>res.status(200).json(campaign.serialize()))
+    .then(campaign => {
+      res.render('contribute', campaign)
+    })
     .catch(err => {
       console.error(err);
         res.status(500).json({message: 'Internal server error'})
@@ -90,7 +99,7 @@ app.get('/campaigns/:id', (req, res) => {
 
 });
 
-// <h3><%= campagin.title %></h3>
+// <h3><%= campaign.title %></h3>
 
 // app.get('/campaigns/:id', (req, res) => {
 //
@@ -105,7 +114,6 @@ app.get('/campaigns/:id', (req, res) => {
 // });
 
 app.post('/campaigns', (req, res) => {
-
   const requiredFields = ['artist', 'title', 'description', 'financialGoal'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
