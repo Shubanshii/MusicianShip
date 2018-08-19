@@ -2,12 +2,17 @@
 
 const mongoose = require("mongoose");
 
+const transactionSchema = mongoose.Schema({
+  amounts: [Number]
+});
+
 const campaignSchema = mongoose.Schema({
   artist: String,
   title: String,
   description: String,
   files: String,
   financialGoal: Number,
+  transactions: [transactionSchema],
   status: {type: String, default: 'current'},
   createdAt: { type: Date, default: Date.now }
 });

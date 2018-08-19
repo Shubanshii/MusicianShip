@@ -46,10 +46,28 @@ function getAndDisplayCampaigns() {
 	getRecentCampaigns(displayCampaigns);
 }
 
-function updateFinancialGoal() {
+function getFinancialGoal(updateFinancialGoal) {
   $( ".contribution-form" ).submit(function( event ) {
-    MOCK_CAMPAIGN_INFO.campaigns[1].financialGoal = MOCK_CAMPAIGN_INFO.campaigns[1].financialGoal - $(".amount").val();
-    alert( MOCK_CAMPAIGN_INFO.campaigns[1].financialGoal );
+    // MOCK_CAMPAIGN_INFO.campaigns[1].financialGoal = MOCK_CAMPAIGN_INFO.campaigns[1].financialGoal - $(".amount").val();
+    // alert( MOCK_CAMPAIGN_INFO.campaigns[1].financialGoal );
+    $(location).attr('href');
+
+	//pure javascript
+	var pathname = window.location.pathname;
+  console.log(pathname);
+  console.log($(".amount").val());
+
+  // $.ajax({
+  //   type: "GET",
+  //   url: pathname,
+  //   data: financialGoal,
+  //   success: function(){},
+  //   dataType: "json",
+  //   contentType: "application/json"
+  // });
+
+	// to show it in an alert window
+    // alert(window.location);
     event.preventDefault();
   });
 }
@@ -122,7 +140,7 @@ function createCampaign() {
 $(function() {
 	getAndDisplayCampaigns();
   // displayCampaigns();
-  updateFinancialGoal();
+  getFinancialGoal();
   createCampaign();
 
 })
