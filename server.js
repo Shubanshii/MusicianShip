@@ -30,7 +30,9 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
-
+app.get('/create', (req, res) => {
+  res.render('create');
+});
 
 // app.get('/campaigns', (req, res) => {
 //     const filters = {};
