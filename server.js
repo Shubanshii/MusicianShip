@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 const {PORT, DATABASE_URL} = require('./config');
-const {Campaign} = require('./models');
+const {Contribution, Campaign} = require('./models');
 
 const app = express();
 
@@ -32,6 +32,34 @@ app.get('/', (req, res) => {
 
 app.get('/create', (req, res) => {
   res.render('create');
+});
+
+app.get('/contributions', (req, res) => {
+  Contribution
+    .find()
+    .then(contributions => {
+      res.json(contributions.map(contribution => {
+        return {
+          id: contribution._id,
+          amount: contribution.amount
+
+        };
+      }));
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'something went terribly wrong' });
+    });
+});
+
+app.get('/contributions/:id', (req, res) => {
+  Contribution
+    .findById(req.params.id)
+    .then(contribution =>res.json(contribution.serialize()))
+    .catch(err => {
+      console.error(err);
+        res.status(500).json({message: 'Internal server error'})
+    });
 });
 
 // app.get('/campaigns', (req, res) => {
@@ -101,6 +129,44 @@ app.get('/campaigns/:id', (req, res) => {
 
 });
 
+app.post('/contributions', (req, res) => {
+  console.log('this right here');
+  const requiredFields = ['amount'];
+  // const requiredFields = ['artist', 'title', 'description', 'financialGoal'];
+  for (let i=0; i<requiredFields.length; i++) {
+    const field = requiredFields[i];
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+
+  Contribution
+    .create({
+      id: req.body._id,
+      amount: req.body.amount,
+    })
+    .then(
+      contribution => {
+
+        return Campaign.findByIdAndUpdate(req.body.campaignId, {
+          $push: {
+            contributions: contribution._id
+          }
+        })
+      })
+      .then(
+        campaign => {
+          res.status(201).json(campaign.serialize());
+        }
+      )
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'});
+    });
+});
+
 // <h3><%= campaign.title %></h3>
 
 // app.get('/campaigns/:id', (req, res) => {
@@ -117,6 +183,7 @@ app.get('/campaigns/:id', (req, res) => {
 
 app.post('/campaigns', (req, res) => {
   const requiredFields = ['artist', 'title', 'description', 'financialGoal'];
+  // const requiredFields = ['artist', 'title', 'description', 'financialGoal'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {

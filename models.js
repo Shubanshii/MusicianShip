@@ -2,8 +2,8 @@
 
 const mongoose = require("mongoose");
 
-const transactionSchema = mongoose.Schema({
-  amounts: [Number]
+const contributionsSchema = mongoose.Schema({
+  amount: Number
 });
 
 const campaignSchema = mongoose.Schema({
@@ -12,9 +12,19 @@ const campaignSchema = mongoose.Schema({
   description: String,
   files: String,
   financialGoal: Number,
-  transactions: [transactionSchema],
+  contributions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Contribution' }],
   status: {type: String, default: 'current'},
   createdAt: { type: Date, default: Date.now }
+});
+
+campaignSchema.pre('find', function(next) {
+  this.populate('contributions');
+  next();
+});
+
+campaignSchema.pre('findOne', function(next) {
+  this.populate('contributions');
+  next();
 });
 
 // virtuals
@@ -25,6 +35,19 @@ const campaignSchema = mongoose.Schema({
 //   <a href="contribute.html">Contribute</a>`
 // });
 
+// campaignSchema.virtual('financialGoal').get(function() {
+//   return `$${this.transactions.financialGoal}`.trim();
+// });
+
+contributionsSchema.methods.serialize = function() {
+  return {
+    id: this._id,
+    amount: this.amount
+
+
+  }
+}
+
 campaignSchema.methods.serialize = function() {
   return {
     id: this._id,
@@ -33,11 +56,13 @@ campaignSchema.methods.serialize = function() {
     description: this.description,
     files: this.files,
     financialGoal: this.financialGoal,
+    transactions: this.transactions,
     status: this.status,
     createdAt: this.createdAt
   }
 }
 
+var Contribution = mongoose.model('Contribution', contributionsSchema);
 const Campaign = mongoose.model('Campaign', campaignSchema);
 
-module.exports = { Campaign };
+module.exports = { Contribution, Campaign };

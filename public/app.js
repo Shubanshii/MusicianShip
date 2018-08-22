@@ -46,7 +46,7 @@ function getAndDisplayCampaigns() {
 	getRecentCampaigns(displayCampaigns);
 }
 
-function getFinancialGoal(updateFinancialGoal) {
+function addContribution(updateFinancialGoal) {
   $( ".contribution-form" ).submit(function( event ) {
     // MOCK_CAMPAIGN_INFO.campaigns[1].financialGoal = MOCK_CAMPAIGN_INFO.campaigns[1].financialGoal - $(".amount").val();
     // alert( MOCK_CAMPAIGN_INFO.campaigns[1].financialGoal );
@@ -54,17 +54,25 @@ function getFinancialGoal(updateFinancialGoal) {
 
 	//pure javascript
 	var pathname = window.location.pathname;
-  console.log(pathname);
-  console.log($(".amount").val());
+  var id = pathname.slice(11, 35)
+  console.log(id);
+  var amount = $(".amount").val();
+  var dataObject = {
+    amount,
+    campaignId: id
+  };
 
-  // $.ajax({
-  //   type: "GET",
-  //   url: pathname,
-  //   data: financialGoal,
-  //   success: function(){},
-  //   dataType: "json",
-  //   contentType: "application/json"
-  // });
+
+
+  console.log(JSON.stringify(dataObject));
+  $.ajax({
+    type: "POST",
+    url: '/contributions',
+    data: JSON.stringify(dataObject),
+    success: function(){},
+    dataType: "json",
+    contentType: "application/json"
+  });
 
 	// to show it in an alert window
     // alert(window.location);
@@ -140,7 +148,7 @@ function createCampaign() {
 $(function() {
 	getAndDisplayCampaigns();
   // displayCampaigns();
-  getFinancialGoal();
+  addContribution();
   createCampaign();
 
 })
