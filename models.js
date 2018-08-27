@@ -1,9 +1,18 @@
 "use strict";
 
 const mongoose = require("mongoose");
+const bcrypt = require('bcrypt-nodejs');
+
+const userSchema = mongoose.Schema({
+  local: {
+    email: String,
+    password: String
+  }
+});
 
 const contributionsSchema = mongoose.Schema({
-  amount: Number
+  amount: Number,
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
 const campaignSchema = mongoose.Schema({
@@ -13,6 +22,7 @@ const campaignSchema = mongoose.Schema({
   files: String,
   financialGoal: Number,
   contributions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Contribution' }],
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   status: {type: String, default: 'current'},
   createdAt: { type: Date, default: Date.now }
 });
@@ -62,7 +72,16 @@ campaignSchema.methods.serialize = function() {
   }
 }
 
+userSchema.methods.generateHash = function(password) {
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+};
+
+userSchema.methods.validPassword = function(password) {
+  return bcrypt.compareSync(password, this.local.password);
+};
+
+var User = mongoose.model('User', userSchema);
 var Contribution = mongoose.model('Contribution', contributionsSchema);
 const Campaign = mongoose.model('Campaign', campaignSchema);
 
-module.exports = { Contribution, Campaign };
+module.exports = { Contribution, Campaign, User };

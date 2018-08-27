@@ -1,0 +1,21 @@
+{
+  "_id":{"$oid":"5af50ff5c082f1e92f83426b"},
+  "local": {
+    "email": "wth@wth.com",
+    "password": "Groove123!"
+  }
+}
+{
+  "_id":{"$oid":"5af50ff5c082f1e92f83078a"},
+  "local": {
+    "email": "wtj@wth.com",
+    "password": "Mroove123!"
+  }
+}
+{
+  "_id":{"$oid":"5af50ff5c082f1e92f83486a"},
+  "local": {
+    "email": "wti@wth.com",
+    "password": "Nroove123!"
+  }
+}

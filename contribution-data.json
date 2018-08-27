@@ -1,12 +1,15 @@
 {
   "_id":{"$oid":"5af50c84c082f1e92f834209"},
-  "amount": 50
+  "amount": 50,
+  "user": {"$oid":"5af50ff5c082f1e92f834267"}
 }
 {
   "_id":{"$oid":"5af50c84c082f1e92f834211"},
-  "amount": 100
+  "amount": 100,
+  "user": {"$oid":"5af50ff5c082f1e92f830787"}
 }
 {
   "_id":{"$oid":"5af50c84c082f1e92f83420a"},
-  "amount": 250
+  "amount": 250,
+  "user": {"$oid":"5af50ff5c082f1e92f834867"}
 }
