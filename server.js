@@ -178,9 +178,21 @@ app.get('/campaigns/:id', isLoggedIn, (req, res) => {
 
 });
 
+app.get('/campaign-finance/:id', isLoggedIn, (req, res) => {
+  Campaign
+    .findById(req.params.id)
+    .then(campaign => {
+      res.render('contribute', campaign)
+    })
+    .catch(err => {
+      console.error(err);
+        res.status(500).json({message: 'Internal server error'})
+    });
+})
+
 app.post('/contributions', isLoggedIn, (req, res) => {
   console.log('this right here');
-  const requiredFields = ['amount', 'user'];
+  const requiredFields = ['amount'];
   // const requiredFields = ['artist', 'title', 'description', 'financialGoal'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];

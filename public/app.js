@@ -143,6 +143,37 @@ function createCampaign() {
   });
 }
 
+function getFinancialInfo(callback) {
+
+  var pathname = window.location.pathname;
+  var id = pathname.slice(11, 35);
+
+  const settings = {
+    url: '/campaigns/' + id,
+    dataType: 'json',
+    type: 'GET',
+    success: callback
+  };
+
+  $.ajax(settings);
+}
+
+function renderResult(result) {
+  return `
+    <div>
+      <h2>
+      <a class="js-result-name" href="${result.html_url}" target="_blank">${result.name}</a> by <a class="js-user-name" href="${result.owner.html_url}" target="_blank">${result.owner.login}</a></h2>
+      <p>Number of watchers: <span class="js-watchers-count">${result.watchers_count}</span></p>
+      <p>Number of open issues: <span class="js-issues-count">${result.open_issues}</span></p>
+    </div>
+  `;
+}
+
+function displayFiles(data) {
+  console.log(data);
+  // const results = data.items.map((item, index) => renderResult(item));
+  // $('.js-search-results').html(results);
+}
 
 
 //  on page load do this
@@ -151,5 +182,5 @@ $(function() {
   // displayCampaigns();
   addContribution();
   createCampaign();
-
+  getFinancialInfo(displayFiles);
 })
