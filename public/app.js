@@ -122,6 +122,7 @@ function createCampaign() {
         }
     });
     o.files = dataURI;
+    console.log(this);
     console.log(o);
     return o;
 };

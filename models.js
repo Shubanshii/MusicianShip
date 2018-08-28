@@ -66,7 +66,8 @@ campaignSchema.methods.serialize = function() {
     description: this.description,
     files: this.files,
     financialGoal: this.financialGoal,
-    transactions: this.transactions,
+    contributions: this.contributions,
+    user: this.user,
     status: this.status,
     createdAt: this.createdAt
   }

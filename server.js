@@ -1,23 +1,32 @@
 "use strict";
 
 const express = require('express');
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
 const path = require('path');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
+const passport = require('passport');
+const flash = require('connect-flash');
+
+require('./passport')(passport);
+
+
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const session = require('express-session')
 
 const {PORT, DATABASE_URL} = require('./config');
-const {Contribution, Campaign} = require('./models');
+const {Contribution, Campaign, User} = require('./models');
 
 const app = express();
 
-
-
+require('./passport')(passport);
 
 app.use(morgan('common'));
 app.use(express.static('public'));
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 // app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -25,16 +34,56 @@ app.use(methodOverride('_method'));
 app.disable('etag');
 // create application/json parser
 
+app.use(session({ secret: 'ilovescotchyscotchyscotchscotch', resave: true, saveUninitialized: true}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
 
 app.get('/', (req, res) => {
   res.render('index');
 });
 
-app.get('/create', (req, res) => {
+app.get('/index2', function(req, res) {
+    res.render('index2');
+  });
+
+app.get('/create', isLoggedIn, (req, res) => {
   res.render('create');
 });
 
-app.get('/contributions', (req, res) => {
+app.get('/login', function(req, res) {
+  res.render('login.ejs', {message: req.flash('loginMessage') });
+});
+
+app.post('/login', passport.authenticate('local-login', {
+  successRedirect: '/profile',
+  failureRedirect: '/login',
+  failureFlash: true
+}));
+
+app.get('/signup', function(req, res) {
+  res.render('signup', { message: req.flash('signupMessage') });
+});
+
+app.post('/signup', passport.authenticate('local-signup', {
+  successRedirect: '/profile',
+  failureRedirect: '/signup',
+  failureFlash: true
+}));
+
+app.get('/profile', isLoggedIn, function(req, res) {
+  res.render('profile', {
+    user: req.user
+  });
+});
+
+app.get('/logout', function(req, res) {
+  req.logout();
+  res.redirect('/');
+});
+
+app.get('/contributions', isLoggedIn, (req, res) => {
   Contribution
     .find()
     .then(contributions => {
@@ -52,7 +101,7 @@ app.get('/contributions', (req, res) => {
     });
 });
 
-app.get('/contributions/:id', (req, res) => {
+app.get('/contributions/:id', isLoggedIn, (req, res) => {
   Contribution
     .findById(req.params.id)
     .then(contribution =>res.json(contribution.serialize()))
@@ -99,7 +148,7 @@ app.get('/contributions/:id', (req, res) => {
 //   });
 // });
 
-app.get('/campaigns', (req, res) => {
+app.get('/campaigns', isLoggedIn, (req, res) => {
   Campaign
     .find()
     .then(campaigns => {
@@ -115,7 +164,7 @@ app.get('/campaigns', (req, res) => {
     });
 });
 
-app.get('/campaigns/:id', (req, res) => {
+app.get('/campaigns/:id', isLoggedIn, (req, res) => {
 
   Campaign
     .findById(req.params.id)
@@ -129,9 +178,9 @@ app.get('/campaigns/:id', (req, res) => {
 
 });
 
-app.post('/contributions', (req, res) => {
+app.post('/contributions', isLoggedIn, (req, res) => {
   console.log('this right here');
-  const requiredFields = ['amount'];
+  const requiredFields = ['amount', 'user'];
   // const requiredFields = ['artist', 'title', 'description', 'financialGoal'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
@@ -146,6 +195,7 @@ app.post('/contributions', (req, res) => {
     .create({
       id: req.body._id,
       amount: req.body.amount,
+      user: req.body.user
     })
     .then(
       contribution => {
@@ -181,9 +231,14 @@ app.post('/contributions', (req, res) => {
 //
 // });
 
-app.post('/campaigns', (req, res) => {
+app.post('/campaigns', isLoggedIn, (req, res) => {
   const requiredFields = ['artist', 'title', 'description', 'financialGoal'];
-  // const requiredFields = ['artist', 'title', 'description', 'financialGoal'];
+  console.log(req.session.passport.user);
+  User
+    .find()
+    .then(user => {
+      // console.log(user);
+    })
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
@@ -200,6 +255,8 @@ app.post('/campaigns', (req, res) => {
       title: req.body.title,
       description: req.body.description,
       files: req.body.files,
+      contributions: req.body.contributions,
+      user: req.session.passport.user,
       financialGoal: req.body.financialGoal,
       status: req.body.status,
       createdAt: req.body.createdAt})
@@ -211,7 +268,7 @@ app.post('/campaigns', (req, res) => {
     });
 });
 
-app.put('/campaigns/:id', (req, res) => {
+app.put('/campaigns/:id', isLoggedIn, (req, res) => {
 
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     const message = (
@@ -237,12 +294,19 @@ app.put('/campaigns/:id', (req, res) => {
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
-app.delete('/campaigns/:id', (req, res) => {
+app.delete('/campaigns/:id', isLoggedIn, (req, res) => {
   Campaign
     .findByIdAndRemove(req.params.id)
     .then(() => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
+
+function isLoggedIn(req, res, next) {
+  if(req.isAuthenticated())
+    return next();
+
+    res.redirect('/');
+}
 
 let server;
 
