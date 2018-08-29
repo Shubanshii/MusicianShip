@@ -76,8 +76,10 @@ function addContribution(updateFinancialGoal) {
 
 	// to show it in an alert window
     // alert(window.location);
+    getFinancialInfo(displayFiles);
     event.preventDefault();
   });
+
 }
 
 function createCampaign() {
@@ -149,7 +151,7 @@ function getFinancialInfo(callback) {
   var id = pathname.slice(11, 35);
 
   const settings = {
-    url: '/campaigns/' + id,
+    url: '/campaign-finance/' + id,
     dataType: 'json',
     type: 'GET',
     success: callback
@@ -158,19 +160,21 @@ function getFinancialInfo(callback) {
   $.ajax(settings);
 }
 
-function renderResult(result) {
-  return `
-    <div>
-      <h2>
-      <a class="js-result-name" href="${result.html_url}" target="_blank">${result.name}</a> by <a class="js-user-name" href="${result.owner.html_url}" target="_blank">${result.owner.login}</a></h2>
-      <p>Number of watchers: <span class="js-watchers-count">${result.watchers_count}</span></p>
-      <p>Number of open issues: <span class="js-issues-count">${result.open_issues}</span></p>
-    </div>
-  `;
-}
-
 function displayFiles(data) {
-  console.log(data);
+  let total = 0;
+  console.log('contributions', data.contributions);
+  console.log('financial goal', data.financialGoal);
+  for (var i=0; i<data.contributions.length; i++) {
+    total += data.contributions[i].amount;
+  }
+  if (total >= data.financialGoal) {
+    $('.files').html(
+      `
+        <h2>Download</h2>
+        <p>${data.files}</p>
+      `
+    )
+  }
   // const results = data.items.map((item, index) => renderResult(item));
   // $('.js-search-results').html(results);
 }

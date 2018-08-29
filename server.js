@@ -178,12 +178,22 @@ app.get('/campaigns/:id', isLoggedIn, (req, res) => {
 
 });
 
+// app.get('/campaigns/:id', (req, res) => {
+//
+//   Campaign
+//     .findById(req.params.id)
+//     .then(campaign =>res.status(200).json(campaign.serialize()).render('contribute'))
+//     .catch(err => {
+//       console.error(err);
+//         res.status(500).json({message: 'Internal server error'})
+//     });
+//
+// });
+
 app.get('/campaign-finance/:id', isLoggedIn, (req, res) => {
   Campaign
     .findById(req.params.id)
-    .then(campaign => {
-      res.render('contribute', campaign)
-    })
+    .then(campaign =>res.json(campaign.serialize()))
     .catch(err => {
       console.error(err);
         res.status(500).json({message: 'Internal server error'})
